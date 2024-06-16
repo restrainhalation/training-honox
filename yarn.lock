@@ -581,6 +581,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/vite-ssg@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@hono/vite-ssg@npm:0.1.0"
+  peerDependencies:
+    hono: ">=4.0.0"
+  checksum: 10c0/ba2303d18b75ff0db2e7ea096e62dc41e3331385965f5d4e1c2789c376b69a2986db654b55107198bdd522df3e5aa212bd1a5619c2e5c9449fe693e4b2a8354a
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1063,6 +1072,7 @@ __metadata:
     "@cloudflare/workers-types": "npm:^4.20240529.0"
     "@hono/vite-cloudflare-pages": "npm:^0.4.0"
     "@hono/vite-dev-server": "npm:^0.12.1"
+    "@hono/vite-ssg": "npm:^0.1.0"
     hono: "npm:^4.4.6"
     honox: "npm:^0.1.21"
     vite: "npm:^5.2.12"
