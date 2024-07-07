@@ -1,5 +1,5 @@
 import { Button } from '@yamada-ui/react'
-import { useState } from 'hono/jsx'
+import { useState } from 'react'
 
 export default function Counter() {
   const [count, setCount] = useState(0)
