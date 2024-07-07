@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
           }
         }),
         mdx({
-          jsxImportSource: 'hono/jsx',
+          jsxImportSource: 'react',
           remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
         }),
         pages()
