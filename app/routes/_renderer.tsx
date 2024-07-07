@@ -1,4 +1,5 @@
 import { reactRenderer } from '@hono/react-renderer'
+import { UIProvider } from '@yamada-ui/react'
 
 export default reactRenderer(({ children, title }) => {
   return (
@@ -13,7 +14,11 @@ export default reactRenderer(({ children, title }) => {
         )}
         {title ? <title>{title}</title> : ''}
       </head>
-      <body>{children}</body>
+      <body>
+        <UIProvider>
+          {children}
+        </UIProvider>
+      </body>
     </html>
   )
 })

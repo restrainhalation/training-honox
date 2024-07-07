@@ -1,3 +1,4 @@
+import { Button } from '@yamada-ui/react'
 import { useState } from 'hono/jsx'
 
 export default function Counter() {
@@ -5,7 +6,7 @@ export default function Counter() {
   return (
     <div>
       <p>{count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <Button onClick={() => setCount(count + 1)}>Increment</Button>
     </div>
   )
 }
