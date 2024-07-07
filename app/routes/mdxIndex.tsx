@@ -15,7 +15,7 @@ export default function Top() {
           // @ts-ignore
           if (module.frontmatter) {
             return (
-              <li>
+              <li key={id}>
                 <a href={`${id.replace(/\.mdx$/, '')}`}>
                   {/* @ts-ignore */}
                   {module.frontmatter.title}
