@@ -1,3 +1,4 @@
+import { Context, Env } from 'hono'
 import { createRoute } from 'honox/factory'
 
 type Metadata = {
@@ -5,26 +6,26 @@ type Metadata = {
   'etag': string;
 }
 
-const getCache = async (kv: KVNamespace<string>, key: string): Promise<KVNamespaceGetWithMetadataResult<ArrayBuffer, Metadata>> => {
-  return await kv.getWithMetadata<Metadata>(key, {
+const getResponse = async (c: Context<Env, any, {}>):Promise<Response | undefined> => {
+  const { value, metadata } = await c.env.KV.getWithMetadata<Metadata>(c.req.url, {
     type: 'arrayBuffer',
   })
-}
 
-const getHeaders = (headers: Record<string, string>) => {
-  const kv: Record<string, string> = {}
-  for (const [key, value] of Object.entries(headers)) {
-    kv[key] = value
+  if (value && metadata) {
+    const headers: Record<string, string> = {}
+    for (const [key, value] of Object.entries(metadata)) {
+      headers[key] = value
+    }
+    headers['Cache-Control'] = `public, max-age=${60 * 60 * 24 * 60}`
+    return c.body(value, 200, headers)
   }
-  kv['Cache-Control'] = `public, max-age=${60 * 60 * 24 * 60}`
-  return kv
 }
 
 export default createRoute(async (c) => {
   try {
-    let { value, metadata } = await getCache(c.env.KV, c.req.url)
-    if (value && metadata) {
-      return c.body(value, 200, getHeaders(metadata))
+    let response: Response | undefined = await getResponse(c)
+    if (response) {
+      return response
     }
 
     const { key } = c.req.param()
@@ -46,9 +47,9 @@ export default createRoute(async (c) => {
       }
     )
 
-    const { value: value2, metadata: metadata2 } = await getCache(c.env.KV, c.req.url)
-    if (value2 && metadata2) {
-      return c.body(value2, 200, getHeaders(metadata2))
+    response = await getResponse(c)
+    if (response) {
+      return response
     }
 
     return c.text(JSON.stringify({ message: 'error' }), 500)
