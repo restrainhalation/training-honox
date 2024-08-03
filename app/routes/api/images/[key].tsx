@@ -21,9 +21,13 @@ export default createRoute(async (c) => {
     if (bucketObject !== null) {
     const { body, httpMetadata, etag } = bucketObject
     console.log('R2: ', body, httpMetadata, etag)
-    await c.env.KV.put(c.req.url, body, {
-      metadata: httpMetadata,
-    })
+    await c.env.KV.put(
+      c.req.url,
+      await (new Response(body).clone().arrayBuffer()),
+      {
+        metadata: httpMetadata,
+      }
+    )
     console.log('PUT to R2')
     return c.body(body, 200, {
       'Cache-Control': `public, max-age=${60 * 60 * 24 * 30}`,
