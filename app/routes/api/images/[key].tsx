@@ -4,23 +4,31 @@ type Metadata = {
   headers: Record<string, string>
 }
 
+const getCache = async (kv: KVNamespace<string>, key: string): Promise<KVNamespaceGetWithMetadataResult<ArrayBuffer, Metadata>> => {
+  return await kv.getWithMetadata<Metadata>(key, {
+    type: 'arrayBuffer',
+  })
+}
+
 export default createRoute(async (c) => {
   try {
-    const { value, metadata } = await c.env.KV.getWithMetadata<Metadata>(c.req.url, {
-      type: 'arrayBuffer',
-    })
-    console.log('KV: ', value, metadata)
+    let { value, metadata } = await getCache(c.env.KV, c.req.url)
+    console.log('getCache1#KV: ', value, metadata)
     if (value && metadata) {
       return c.body(value, 200, metadata.headers)
     }
     console.log('Not found (KV)')
 
-    const bucket = c.env.R2
     const { key } = c.req.param()
-    const bucketObject = await bucket.get(key)
-    if (bucketObject !== null) {
+    const bucketObject = await c.env.R2.get(key)
+    if (bucketObject === null) {
+      console.log('Not found (R2)')
+      return c.notFound()
+    }
+
     const { body, httpMetadata, etag } = bucketObject
     console.log('R2: ', body, httpMetadata, etag)
+
     await c.env.KV.put(
       c.req.url,
       await (new Response(body).clone().arrayBuffer()),
@@ -29,15 +37,16 @@ export default createRoute(async (c) => {
       }
     )
     console.log('PUT to R2')
-    return c.body(body, 200, {
-      'Cache-Control': `public, max-age=${60 * 60 * 24 * 30}`,
-      'Content-Type': httpMetadata?.contentType ?? 'application/octet-stream',
-      'etag': `"${etag}"`
-    })
-    } else {
-      console.log('Not found (R2)')
-      return c.notFound()
+
+    const { value: value2, metadata: metadata2 } = await getCache(c.env.KV, c.req.url)
+    console.log('getCache2#KV: ', value2, metadata2)
+    if (value2 && metadata2) {
+      return c.body(value2, 200, metadata2.headers)
     }
+
+    console.log('Not found (KV 2)')
+    c.status(500)
+    return c.text(JSON.stringify({ message: 'error' }))
 
   } catch (e: unknown) {
     const error = e as Error
