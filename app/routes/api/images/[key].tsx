@@ -1,7 +1,8 @@
 import { createRoute } from 'honox/factory'
 
 type Metadata = {
-  headers: Record<string, string>
+  'Content-Type': string;
+  'etag': string;
 }
 
 const getCache = async (kv: KVNamespace<string>, key: string): Promise<KVNamespaceGetWithMetadataResult<ArrayBuffer, Metadata>> => {
@@ -25,9 +26,9 @@ export default createRoute(async (c) => {
     let { value, metadata } = await getCache(c.env.KV, c.req.url)
     console.log('getCache1#KV: ', value, metadata)
     if (value && metadata) {
-      console.log('headers1: ', metadata.headers)
-      console.log('headers1-2: ', getHeaders(metadata.headers))
-      return c.body(value, 200, getHeaders(metadata.headers))
+      console.log('headers1: ', metadata)
+      console.log('headers1-2: ', getHeaders(metadata))
+      return c.body(value, 200, getHeaders(metadata))
     }
     console.log('Not found (KV)')
 
@@ -56,9 +57,9 @@ export default createRoute(async (c) => {
     const { value: value2, metadata: metadata2 } = await getCache(c.env.KV, c.req.url)
     console.log('getCache2#KV: ', value2, metadata2)
     if (value2 && metadata2) {
-      console.log('headers2: ', metadata2.headers)
-      console.log('headers2-2: ', getHeaders(metadata2.headers))
-      return c.body(value2, 200, getHeaders(metadata2.headers))
+      console.log('headers2: ', metadata2)
+      console.log('headers2-2: ', getHeaders(metadata2))
+      return c.body(value2, 200, getHeaders(metadata2))
     }
 
     console.log('Not found (KV 2)')
