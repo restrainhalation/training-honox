@@ -11,8 +11,11 @@ const getCache = async (kv: KVNamespace<string>, key: string): Promise<KVNamespa
 }
 
 const getHeaders = (headers: Record<string, string>) => {
-  const kv: Record<string, string> = headers
-  headers['Cache-Control'] = `public, max-age=${60 * 60 * 24 * 30}`
+  const kv: Record<string, string> = {}
+  for (const [key, value] of Object.entries(headers)) {
+    kv[key] = value
+  }
+  kv['Cache-Control'] = `public, max-age=${60 * 60 * 24 * 30}`
   return kv
 }
 
