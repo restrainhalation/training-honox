@@ -10,12 +10,21 @@ const getCache = async (kv: KVNamespace<string>, key: string): Promise<KVNamespa
   })
 }
 
+const getHeaders = (headers: Record<string, string>) => {
+  const kv: Record<string, string> = {}
+  for (const [key, value] of Object.entries(headers)) {
+    kv[key] = value
+  }
+  kv['Cache-Control'] = `public, max-age=${60 * 60 * 24 * 30}`
+  return kv
+}
+
 export default createRoute(async (c) => {
   try {
     let { value, metadata } = await getCache(c.env.KV, c.req.url)
     console.log('getCache1#KV: ', value, metadata)
     if (value && metadata) {
-      return c.body(value, 200, metadata.headers)
+      return c.body(value, 200, getHeaders(metadata.headers))
     }
     console.log('Not found (KV)')
 
@@ -33,7 +42,10 @@ export default createRoute(async (c) => {
       c.req.url,
       await (new Response(body).clone().arrayBuffer()),
       {
-        metadata: httpMetadata,
+        metadata: {
+          'Content-Type': httpMetadata?.contentType ?? 'application/octet-stream',
+          'etag': `"${etag}"`
+        },
       }
     )
     console.log('PUT to R2')
@@ -41,7 +53,7 @@ export default createRoute(async (c) => {
     const { value: value2, metadata: metadata2 } = await getCache(c.env.KV, c.req.url)
     console.log('getCache2#KV: ', value2, metadata2)
     if (value2 && metadata2) {
-      return c.body(value2, 200, metadata2.headers)
+      return c.body(value2, 200, getHeaders(metadata2.headers))
     }
 
     console.log('Not found (KV 2)')
