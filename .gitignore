@@ -35,3 +35,5 @@ lerna-debug.log*
 .DS_Store
 
 wrangler.toml
+
+stats.html

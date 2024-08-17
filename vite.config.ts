@@ -6,6 +6,7 @@ import client from 'honox/vite/client'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import { defineConfig } from 'vite'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig(({ mode }) => {
   if (mode === 'client') {
@@ -30,7 +31,8 @@ export default defineConfig(({ mode }) => {
           jsxImportSource: 'react',
           remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
         }),
-        pages()
+        pages(),
+        visualizer()
       ],
     }
   }
