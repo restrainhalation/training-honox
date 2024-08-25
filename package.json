@@ -36,7 +36,6 @@
     "rollup": "npm:@rollup/wasm-node"
   },
   "volta": {
-    "node": "22.6.0",
-    "yarn": "4.4.0"
+    "node": "22.6.0"
   }
 }
