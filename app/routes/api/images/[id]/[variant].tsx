@@ -79,7 +79,7 @@ export default createRoute(async (c: Context) => {
 
     await c.env.KV.put(
       c.req.url,
-      await (new Response(response.body).clone().arrayBuffer()),
+      await (response.arrayBuffer()),
       {
         metadata: {
           'Content-Type': response.headers.get('content-type') ?? 'application/octet-stream',
@@ -88,7 +88,12 @@ export default createRoute(async (c: Context) => {
       }
     )
 
-    return response
+    response = await getResponse(c)
+    if (response) {
+      return response
+    }
+
+    return c.text(JSON.stringify({ message: 'error' }), 500)
 
   } catch (e: unknown) {
     const error = e as Error
