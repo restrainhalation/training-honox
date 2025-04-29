@@ -34,7 +34,11 @@
     "wrangler": "^4.13.2"
   },
   "overrides": {
-    "rollup": "npm:@rollup/wasm-node"
+    "rollup": "npm:@rollup/wasm-node",
+    "@typescript-eslint/typescript-estree": "^8.31.1"
+  },
+  "resolutions": {
+    "@typescript-eslint/typescript-estree": "^8.31.1"
   },
   "volta": {
     "node": "22.6.0"
